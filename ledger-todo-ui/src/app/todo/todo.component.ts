@@ -53,7 +53,7 @@ export class TodoComponent implements OnInit {
     });
   }
 
-  private create(): void {
-    this.ledger.createTodo("test", "body", new Date());
+  public create(): void {
+    this.ledger.createTodo({ name: "test", body: "body", dueDate: new Date() });
   }
 }
