@@ -1,11 +1,18 @@
 import { Injectable } from "@angular/core";
 import {
+  CreateTodoTx,
+  UpdateTodoTx,
+  ShareTodoTx
+} from "../shared/structures/transactions.structure";
+import {
   Connection,
   IKey,
   KeyHandler,
   KeyType,
-  ILedgerResponse
+  ILedgerResponse,
+  TransactionHandler
 } from "@activeledger/sdk";
+import { IUpdateTodo, ICreateTodo } from "../shared/interfaces/todos.interface";
 
 @Injectable({
   providedIn: "root"
@@ -50,6 +57,95 @@ export class LedgerService {
         })
         .catch((err: unknown) => {
           reject(err);
+        });
+    });
+  }
+
+  public createTodo(data: ICreateTodo): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const conn = new Connection("http", "localhost", 5260);
+      const txHandler = new TransactionHandler();
+
+      const transaction = new CreateTodoTx();
+
+      transaction.$tx.$i[this.streamid] = {
+        name: data.name,
+        body: data.body,
+        dueDate: data.dueDate
+      };
+
+      txHandler
+        .signTransaction(transaction, this.key)
+        .then((signedTx: any) => {
+          return txHandler.sendTransaction(signedTx, conn);
+        })
+        .then((ledgerResp: any) => {
+          console.log(ledgerResp);
+        })
+        .catch((err: unknown) => {
+          console.error(err);
+        });
+    });
+  }
+
+  public updateTodo(data: IUpdateTodo): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const conn = new Connection("http", "localhost", 5260);
+      const txHandler = new TransactionHandler();
+
+      const transaction = new UpdateTodoTx();
+
+      transaction.$tx.$i[this.streamid] = {};
+
+      transaction.$tx.$o[data.streamid] = {};
+
+      if (data.name) {
+        transaction.$tx.$o[data.streamid].name = data.name;
+      }
+
+      if (data.body) {
+        transaction.$tx.$o[data.streamid].body = data.body;
+      }
+
+      if (data.dueDate) {
+        transaction.$tx.$o[data.streamid].dueDate = data.dueDate;
+      }
+
+      txHandler
+        .signTransaction(transaction, this.key)
+        .then((signedTx: any) => {
+          return txHandler.sendTransaction(signedTx, conn);
+        })
+        .then((ledgerResp: any) => {
+          console.log(ledgerResp);
+        })
+        .catch((err: unknown) => {
+          console.error(err);
+        });
+    });
+  }
+
+  public shareTodo(streamid: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const conn = new Connection("http", "localhost", 5260);
+      const txHandler = new TransactionHandler();
+
+      const transaction = new ShareTodoTx();
+
+      transaction.$tx.$i[this.streamid] = {};
+
+      transaction.$tx.$o[streamid] = {};
+
+      txHandler
+        .signTransaction(transaction, this.key)
+        .then((signedTx: any) => {
+          return txHandler.sendTransaction(signedTx, conn);
+        })
+        .then((ledgerResp: any) => {
+          console.log(ledgerResp);
+        })
+        .catch((err: unknown) => {
+          console.error(err);
         });
     });
   }

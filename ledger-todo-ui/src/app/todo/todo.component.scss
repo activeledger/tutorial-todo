@@ -1,0 +1,109 @@
+.wrapper {
+  height: 100%;
+
+  .streamid {
+    padding: 10px 0 0 20px;
+
+    font-size: 1.4em;
+    font-weight: 300;
+  }
+
+  .todo-streams {
+    margin: 0 auto;
+    width: 840px;
+    height: 100%;
+
+    .streams-title {
+      font-size: 1.4em;
+      padding: 10px 0 20px;
+      text-align: center;
+    }
+
+    .created-stream {
+      display: inline-block;
+    }
+
+    .shared-stream {
+      padding-left: 20px;
+      border-left: 1px solid rgb(133, 133, 133);
+      display: inline-block;
+    }
+
+    .todo-stream {
+      width: 340px;
+      height: 100%;
+
+      padding: 30px;
+
+      .todo-item {
+        margin-bottom: 60px;
+
+        -webkit-box-shadow: 0px 0px 101px -17px rgba(0, 0, 0, 0.48);
+        -moz-box-shadow: 0px 0px 101px -17px rgba(0, 0, 0, 0.48);
+        box-shadow: 0px 0px 101px -17px rgba(0, 0, 0, 0.48);
+
+        width: 300px;
+        height: 150px;
+
+        padding: 20px;
+
+        border-radius: 8px;
+
+        transition: 0.2s ease-in-out all;
+
+        cursor: pointer;
+
+        &:hover {
+          -webkit-box-shadow: 0px 0px 101px 11px rgba(0, 0, 0, 0.48);
+          -moz-box-shadow: 0px 0px 101px 11px rgba(0, 0, 0, 0.48);
+          box-shadow: 0px 0px 101px 11px rgba(0, 0, 0, 0.48);
+
+          width: 290px;
+          height: 140px;
+
+          margin-top: 5px;
+          margin-left: 5px;
+
+          font-size: 0.95em;
+        }
+
+        .todo-header {
+          display: block;
+          height: 30px;
+          .todo-title {
+            float: left;
+            font-size: 1.2em;
+            font-weight: 300;
+          }
+
+          .todo-due {
+            float: right;
+          }
+        }
+
+        .todo-body {
+          border-top: 1px solid rgb(167, 167, 167);
+          padding-top: 20px;
+        }
+      }
+    }
+  }
+
+  .controls {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+
+    padding: 20px 40px;
+
+    .control {
+      font-size: 1.2em;
+
+      margin-right: 10px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

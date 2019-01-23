@@ -1,2 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import "@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+@import url("https://fonts.googleapis.com/css?family=Lato:100,300,400,400i,700,900");
+
+/deep/body {
+  font-family: "Lato", sans-serif;
+}

@@ -5,6 +5,7 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { LoginComponent } from "./login/login.component";
 import { TodoComponent } from "./todo/todo.component";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import {
   MatCardModule,
@@ -21,7 +22,8 @@ import {
     MatCardModule,
     MatButtonModule,
     MatInputModule,
-    MatDividerModule
+    MatDividerModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
