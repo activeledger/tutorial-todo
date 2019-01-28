@@ -11,11 +11,25 @@ import {
   MatCardModule,
   MatButtonModule,
   MatInputModule,
-  MatDividerModule
+  MatDividerModule,
+  MatDialogModule,
+  MatDatepickerModule
 } from "@angular/material";
+import { CreateTodoDialogComponent } from "./shared/dialogs/create-todo/create-todo.component";
+import { ViewTodoDialogComponent } from "./shared/dialogs/view-todo/view-todo.component";
+
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MatMomentDateModule } from "@angular/material-moment-adapter";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, TodoComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    TodoComponent,
+    CreateTodoDialogComponent,
+    ViewTodoDialogComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -23,9 +37,16 @@ import {
     MatButtonModule,
     MatInputModule,
     MatDividerModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    MatDialogModule,
+    BrowserAnimationsModule,
+    MatDatepickerModule,
+    MatMomentDateModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [CreateTodoDialogComponent, ViewTodoDialogComponent]
 })
 export class AppModule {}

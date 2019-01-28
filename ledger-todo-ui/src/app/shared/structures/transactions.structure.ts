@@ -29,8 +29,8 @@ export class UpdateTodoTx implements ITxBase {
 }
 
 class UpdateTodoBody implements IUpdateTodoTx {
-  $namespace: "todo";
-  $contract: "todo";
+  $namespace = "todo";
+  $contract = "todo";
   $entry: TxEntry.Update = TxEntry.Update;
   $i: IBlankInput = {};
   $o: IUpdateTodoOutput = {};

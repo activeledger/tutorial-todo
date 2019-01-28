@@ -13,12 +13,13 @@ import {
   TransactionHandler
 } from "@activeledger/sdk";
 import { IUpdateTodo, ICreateTodo } from "../shared/interfaces/todos.interface";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: "root"
 })
 export class LedgerService {
-  constructor() {}
+  constructor(private router: Router) {}
 
   get key(): IKey {
     return JSON.parse(localStorage.getItem("keyPair")) as IKey;
@@ -36,6 +37,11 @@ export class LedgerService {
     localStorage.setItem("streamid", streamid);
   }
 
+  public logout(): void {
+    localStorage.removeItem("streamid");
+    this.router.navigateByUrl("/");
+  }
+
   public createIdentity(): Promise<string> {
     return new Promise((resolve, reject) => {
       const conn = new Connection("http", "localhost", 5260);
@@ -50,6 +56,10 @@ export class LedgerService {
         .then((resp: ILedgerResponse) => {
           if (resp.$streams.new && resp.$streams.new[0]) {
             this.streamid = resp.$streams.new[0].id;
+
+            const key = this.key;
+            key.identity = resp.$streams.new[0].id;
+            this.key = key;
             resolve(resp.$streams.new[0].id);
           } else {
             reject("Bad ledger response");
@@ -80,10 +90,10 @@ export class LedgerService {
           return txHandler.sendTransaction(signedTx, conn);
         })
         .then((ledgerResp: any) => {
-          console.log(ledgerResp);
+          resolve(ledgerResp);
         })
         .catch((err: unknown) => {
-          console.error(err);
+          reject(err);
         });
     });
   }
@@ -117,15 +127,15 @@ export class LedgerService {
           return txHandler.sendTransaction(signedTx, conn);
         })
         .then((ledgerResp: any) => {
-          console.log(ledgerResp);
+          resolve(ledgerResp);
         })
         .catch((err: unknown) => {
-          console.error(err);
+          reject(err);
         });
     });
   }
 
-  public shareTodo(streamid: string): Promise<void> {
+  public shareTodo(recipientStream: string, todoStream: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const conn = new Connection("http", "localhost", 5260);
       const txHandler = new TransactionHandler();
@@ -134,7 +144,9 @@ export class LedgerService {
 
       transaction.$tx.$i[this.streamid] = {};
 
-      transaction.$tx.$o[streamid] = {};
+      transaction.$tx.$o[todoStream] = {
+        stream: recipientStream
+      };
 
       txHandler
         .signTransaction(transaction, this.key)
@@ -142,10 +154,10 @@ export class LedgerService {
           return txHandler.sendTransaction(signedTx, conn);
         })
         .then((ledgerResp: any) => {
-          console.log(ledgerResp);
+          resolve(ledgerResp);
         })
         .catch((err: unknown) => {
-          console.error(err);
+          reject(err);
         });
     });
   }
