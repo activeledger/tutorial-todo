@@ -28,14 +28,39 @@ export default class Todo extends Standard {
     return new Promise<boolean>((resolve, reject) => {
       if (!selfsigned) {
 
+        // Get the streams
+        this.inputStream = Object.keys(this.transactions.$i)[0];
+
+        // Check if the output is set
+        if (this.transactions.$o) {
+          this.outputStream = Object.keys(this.transactions.$o)[0];
+        }
+
+        // Data might be in $i on some update functions so set the entries where it is in $o
+        const outputDataEntries = ["update", "share"];
+
+        // Set data to $i even if it data is being sent in $o (check this next)
+        this.data = this.transactions.$i[this.inputStream];
+
+        // Check if we should be getting the data from $o
+        if (outputDataEntries.indexOf(this.transactions.$entry) > -1) {
+          this.data = this.transactions.$o[this.outputStream];
+        }
+
         if (this.transactions.$entry) {
           switch (this.transactions.$entry) {
             case "create":
-              return this.verifyCreate();
+              this.verifyCreate(resolve, reject);
+              break;
             case "update":
-              return this.verifyUpdate();
+              this.verifyUpdate(resolve, reject);
+              break;
             case "share":
-              return this.verifyShare();
+              this.verifyShare(resolve, reject);
+              break;
+            default:
+              reject("Entry not found.");
+              break;
           }
         } else {
           reject("No entry found");
@@ -54,30 +79,29 @@ export default class Todo extends Standard {
    */
   public vote(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      // Get Stream id
-      this.inputStream = Object.keys(this.transactions.$i)[0];
 
-      if (this.transactions.$o) {
-        this.outputStream = Object.keys(this.transactions.$o)[0]
-        // Get Stream Activity
+      // Get Stream Activity and its state
+      // Passed input verification so now get the Activity stream
+      if (this.outputStream) {
         this.activity = this.getActivityStreams(this.outputStream);
-        // Run Checks on input stream data object
-        this.state = this.activity.getState();
+      } else {
+        this.activity = this.getActivityStreams(this.inputStream);
       }
 
-      this.data = this.transactions.$i[this.inputStream];
+      this.state = this.activity.getState();
 
       switch (this.transactions.$entry) {
         case "create":
-          return this.voteCreate();
+          this.voteCreate(resolve, reject);
+          break;
         case "update":
-          return this.voteUpdate();
+          this.voteUpdate(resolve, reject);
+          break;
         case "share":
-          return this.voteShare();
-      }
+          this.voteShare(resolve, reject);
+          break;
 
-      this.ActiveLogger.debug("Voting Round - Automatic True");
-      resolve(true);
+      }
     });
   }
 
@@ -93,67 +117,110 @@ export default class Todo extends Standard {
       // Create New Activity Streams        
       switch (this.transactions.$entry) {
         case "create":
-          return this.commitCreate();
+          this.commitCreate(resolve, reject);
+          break;
         case "update":
-          return this.commitUpdate();
+          this.commitUpdate(resolve, reject);
+          break;
         case "share":
-          return this.commitShare();
+          this.commitShare(resolve, reject);
+          break;
       }
     });
   }
 
-  private verifyCreate(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-
-    });
+  private verifyCreate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    if (this.data && this.data.name && this.data.dueDate && this.data.body) {
+      if (this.data.name.length > 0 && this.data.body.length > 0) {
+        resolve(true);
+      } else {
+        reject("Name and body data can't be blank");
+      }
+    } else {
+      reject("Data is missing name, dueDate, or body");
+    }
   }
 
-  private verifyUpdate(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-
-    });
+  private verifyUpdate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    if (this.data && (this.data.name || this.data.body || this.data.dueDate)) {
+      resolve(true);
+    } else {
+      reject("No data provided");
+    }
   }
 
-  private verifyShare(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-
-    });
+  private verifyShare(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    if (this.data.stream) {
+      resolve(true);
+    } else {
+      reject("No recipient provided");
+    }
   }
 
-  private voteCreate(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-
-    });
+  private voteCreate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    resolve(true);
   }
 
-  private voteUpdate(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-
-    });
+  private voteUpdate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    if (this.inputStream === this.state.owner) {
+      resolve(true);
+    } else {
+      reject("Only owner can update");
+    }
   }
 
-  private voteShare(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-
-    });
+  private voteShare(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    if (this.inputStream === this.state.owner) {
+      resolve(true);
+    } else {
+      reject("Only owner can share");
+    }
   }
 
-  private commitCreate(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  private commitCreate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    const namespace = this.transactions.$namespace;
 
-    });
+    const activity = this.newActivityStream(this.data.name);
+    activity.setAuthority(
+      this.getActivityStreams(this.inputStream).getAuthority(),
+      this.getActivityStreams(this.inputStream).getAuthority(true),
+    );
+
+    const state = activity.getState();
+    state.owner = this.inputStream;
+    state.name = this.data.name;
+    state.type = `${namespace}.todo`
+    state.body = this.data.body;
+    state.dueDate = this.data.dueDate;
+    state.sharedWith = [];
+
+    activity.setState(state);
+
+    resolve(true);
   }
 
-  private commitUpdate(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  private commitUpdate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    if (this.data.name) {
+      this.state.name = this.data.name;
+    }
 
-    });
+    if (this.data.body) {
+      this.state.body = this.data.body;
+    }
+
+    if (this.data.dueDate) {
+      this.state.dueDate = this.data.dueDate;
+    }
+
+    this.activity.setState(this.state);
+
+    resolve(true);
   }
 
-  private commitShare(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-
-    });
+  private commitShare(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+    this.state.sharedWith.push(this.data.stream);
+    this.activity.setState(this.state);
+    resolve(true);
   }
 }
 

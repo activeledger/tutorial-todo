@@ -17,9 +17,16 @@
 
       margin: -50px 0 0 -250px;
 
-      .login-button {
-        display: block;
+      .login-button-wrapper {
+        display: flex;
+        justify-content: center;
         margin: 30px auto;
+
+        .login-button {
+          &:first-child {
+            margin-right: 10px;
+          }
+        }
       }
     }
   }

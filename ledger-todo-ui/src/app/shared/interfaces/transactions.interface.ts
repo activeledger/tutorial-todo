@@ -59,5 +59,9 @@ export interface IShareTodoTx extends IBaseTxBody {
 }
 
 export interface IShareTodoOutput {
-  [id: string]: {};
+  [id: string]: ISharedTodoData;
+}
+
+interface ISharedTodoData {
+  stream: string;
 }

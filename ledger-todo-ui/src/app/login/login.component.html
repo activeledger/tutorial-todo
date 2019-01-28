@@ -3,13 +3,16 @@
     <mat-card class="login-box">
       <mat-card-title>Login</mat-card-title>
       <mat-divider></mat-divider>
-      <button class="login-button" mat-stroked-button (click)="login()">
-        Local
-      </button>
 
-      <button class="login-button" mat-stroked-button (click)="login(true)">
-        Public
-      </button>
+      <div class="login-button-wrapper">
+        <button class="login-button" mat-stroked-button (click)="login()">
+          Local
+        </button>
+
+        <button class="login-button" mat-stroked-button (click)="login(true)">
+          Public
+        </button>
+      </div>
     </mat-card>
   </div>
 </div>

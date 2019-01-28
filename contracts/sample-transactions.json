@@ -1,0 +1,71 @@
+{
+  "base": {
+    "$tx": {
+      "$namespace": "todo",
+      "$contract": "todo",
+      "$entry": "",
+      "$i": {
+        "": {}
+      },
+      "$o": {
+        "": {}
+      }
+    },
+    "$sigs": {
+      "": ""
+    }
+  },
+  "create": {
+    "$tx": {
+      "$namespace": "todo",
+      "$contract": "todo",
+      "$entry": "create",
+      "$i": {
+        "03694824abee64dd6674c223ba68bb7fb8e09c561f03e293597bc869b6d1f9a5": {
+          "name": "test",
+          "body": "testbody",
+          "dueDate": "2019/01/28"
+        }
+      }
+    },
+    "$sigs": {
+      "03694824abee64dd6674c223ba68bb7fb8e09c561f03e293597bc869b6d1f9a5": "MEQCIC2PErqZ0mldBnJixyl2fYV1wvtkkQ9sgs8zRlABBU+BAiBCdnP6QIqDLCRFD9WsqnHAW+1ewCUFLmh0/kZbtYh/DQ=="
+    }
+  },
+  "update": {
+    "$tx": {
+      "$namespace": "todo",
+      "$contract": "todo",
+      "$entry": "update",
+      "$i": {
+        "03694824abee64dd6674c223ba68bb7fb8e09c561f03e293597bc869b6d1f9a5": {}
+      },
+      "$o": {
+        "5bcc6d535b0f7b6f67cb9a901046a10c201d6078b12b21985bf3aad068296048": {
+          "name": "changed"
+        }
+      }
+    },
+    "$sigs": {
+      "03694824abee64dd6674c223ba68bb7fb8e09c561f03e293597bc869b6d1f9a5": "MEQCIE47wOcd+0iKV3n4w8AtHvV8Em1ERNdzFc22hcp1S9DvAiAqTv3oCsdeCg3COWfMEiLUAwyynXZ0Tdd/KG4+imOjEg=="
+    }
+  },
+  "share": {
+    "$tx": {
+      "$namespace": "todo",
+      "$contract": "todo",
+      "$entry": "share",
+      "$i": {
+        "03694824abee64dd6674c223ba68bb7fb8e09c561f03e293597bc869b6d1f9a5": {}
+      },
+      "$o": {
+        "5bcc6d535b0f7b6f67cb9a901046a10c201d6078b12b21985bf3aad068296048": {
+          "stream": "streamid"
+        }
+      }
+    },
+    "$sigs": {
+      "03694824abee64dd6674c223ba68bb7fb8e09c561f03e293597bc869b6d1f9a5": "MEUCIEDKl+o38ztLW0UbySyTzMZFnLGkGZikusDtG9cE6EYtAiEAx9tZm6mCChr18dgx+7a+HivF9GlMVjFOdpzyz4c5NDQ="
+    }
+  }
+}
