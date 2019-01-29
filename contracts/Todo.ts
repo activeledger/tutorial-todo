@@ -27,7 +27,6 @@ export default class Todo extends Standard {
   public verify(selfsigned: boolean): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       if (!selfsigned) {
-
         // Get the streams
         this.inputStream = Object.keys(this.transactions.$i)[0];
 
@@ -79,7 +78,6 @@ export default class Todo extends Standard {
    */
   public vote(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-
       // Get Stream Activity and its state
       // Passed input verification so now get the Activity stream
       if (this.outputStream) {
@@ -100,7 +98,6 @@ export default class Todo extends Standard {
         case "share":
           this.voteShare(resolve, reject);
           break;
-
       }
     });
   }
@@ -114,7 +111,7 @@ export default class Todo extends Standard {
   public commit(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       // Update Activity Streams
-      // Create New Activity Streams        
+      // Create New Activity Streams
       switch (this.transactions.$entry) {
         case "create":
           this.commitCreate(resolve, reject);
@@ -129,7 +126,19 @@ export default class Todo extends Standard {
     });
   }
 
-  private verifyCreate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Verify that the create data contains the basic data,
+   * name, dueDate, body, and the name and body length must not be blank
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private verifyCreate(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     if (this.data && this.data.name && this.data.dueDate && this.data.body) {
       if (this.data.name.length > 0 && this.data.body.length > 0) {
         resolve(true);
@@ -141,7 +150,19 @@ export default class Todo extends Standard {
     }
   }
 
-  private verifyUpdate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Verify that the update data contains some data,
+   * either name, body or dueDate, can be all or one.
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private verifyUpdate(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     if (this.data && (this.data.name || this.data.body || this.data.dueDate)) {
       resolve(true);
     } else {
@@ -149,7 +170,18 @@ export default class Todo extends Standard {
     }
   }
 
-  private verifyShare(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Verify that a stream id has been given
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private verifyShare(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     if (this.data.stream) {
       resolve(true);
     } else {
@@ -157,11 +189,34 @@ export default class Todo extends Standard {
     }
   }
 
-  private voteCreate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Vote on the create data
+   * In this instance no checks are needed
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private voteCreate(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     resolve(true);
   }
 
-  private voteUpdate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Check that the update data has been sent by the owner
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private voteUpdate(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     if (this.inputStream === this.state.owner) {
       resolve(true);
     } else {
@@ -169,7 +224,18 @@ export default class Todo extends Standard {
     }
   }
 
-  private voteShare(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Check that the share data has been sent by the owner
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private voteShare(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     if (this.inputStream === this.state.owner) {
       resolve(true);
     } else {
@@ -177,19 +243,30 @@ export default class Todo extends Standard {
     }
   }
 
-  private commitCreate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Create a new todo stream in the ledger
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private commitCreate(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     const namespace = this.transactions.$namespace;
 
     const activity = this.newActivityStream(this.data.name);
     activity.setAuthority(
       this.getActivityStreams(this.inputStream).getAuthority(),
-      this.getActivityStreams(this.inputStream).getAuthority(true),
+      this.getActivityStreams(this.inputStream).getAuthority(true)
     );
 
     const state = activity.getState();
     state.owner = this.inputStream;
     state.name = this.data.name;
-    state.type = `${namespace}.todo`
+    state.type = `${namespace}.todo`;
     state.body = this.data.body;
     state.dueDate = this.data.dueDate;
     state.sharedWith = [];
@@ -199,7 +276,18 @@ export default class Todo extends Standard {
     resolve(true);
   }
 
-  private commitUpdate(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Update a todo stream on the ledger
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private commitUpdate(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     if (this.data.name) {
       this.state.name = this.data.name;
     }
@@ -217,7 +305,18 @@ export default class Todo extends Standard {
     resolve(true);
   }
 
-  private commitShare(resolve: (ok: boolean) => void, reject: (message: string) => void): void {
+  /**
+   * Add a stream to the shared with array of a todo stream
+   *
+   * @private
+   * @param {(ok: boolean) => void} resolve
+   * @param {(message: string) => void} reject
+   * @memberof Todo
+   */
+  private commitShare(
+    resolve: (ok: boolean) => void,
+    reject: (message: string) => void
+  ): void {
     this.state.sharedWith.push(this.data.stream);
     this.activity.setState(this.state);
     resolve(true);

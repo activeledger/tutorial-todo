@@ -102,7 +102,11 @@ export class LedgerService {
             this.key = key;
             resolve(resp.$streams.new[0].id);
           } else {
-            reject("Bad ledger response");
+            if ((resp.$summary as any).errors) {
+              reject((resp.$summary as any).errors);
+            } else {
+              reject("Bad ledger response");
+            }
           }
         })
         .catch((err: unknown) => {
