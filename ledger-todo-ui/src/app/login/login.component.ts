@@ -2,6 +2,13 @@ import { Component, OnInit } from "@angular/core";
 import { LedgerService } from "../providers/ledger.service";
 import { Router } from "@angular/router";
 
+/**
+ * Login
+ *
+ * @export
+ * @class LoginComponent
+ * @implements {OnInit}
+ */
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
@@ -14,12 +21,23 @@ export class LoginComponent implements OnInit {
     this.checkForStream();
   }
 
+  /**
+   * Check that the URL contains the users stream ID
+   *
+   * @private
+   * @memberof LoginComponent
+   */
   private checkForStream(): void {
     if (this.ledger.streamid) {
       this.router.navigateByUrl("/todo/" + this.ledger.streamid);
     }
   }
 
+  /**
+   * Create a new identity and navigate to the todo list
+   *
+   * @memberof LoginComponent
+   */
   public login(): void {
     this.ledger
       .createIdentity()

@@ -10,7 +10,10 @@
         (click)="viewTodo(todo.streamid)"
       >
         <div class="todo-header">
-          <div class="todo-title">{{ todo.name }}</div>
+          <div class="todo-title">
+            {{ todo.name | slice: 0:15 }}
+            <span *ngIf="todo.name.length > 14">...</span>
+          </div>
           <div class="todo-due">
             Due: {{ todo.dueDate | date: "dd/MM/yyyy" }}
           </div>
@@ -28,7 +31,10 @@
         (click)="viewTodo(todo.streamid)"
       >
         <div class="todo-header">
-          <div class="todo-title">{{ todo.name }}</div>
+          <div class="todo-title">
+            {{ todo.name | slice: 0:15 }}
+            <span *ngIf="todo.name.length > 14">...</span>
+          </div>
           <div class="todo-due">
             Due: {{ todo.dueDate | date: "dd/MM/yyyy" }}
           </div>
@@ -55,7 +61,7 @@
       aria-label="refresh"
       (click)="refresh()"
     >
-      <fa-icon [icon]="refresh"></fa-icon>
+      <fa-icon [icon]="refreshIco"></fa-icon>
     </button>
 
     <button

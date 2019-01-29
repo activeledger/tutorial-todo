@@ -25,6 +25,13 @@ export const DATE_FORMATS = {
   }
 };
 
+/**
+ * Dialog for creating a new todo
+ *
+ * @export
+ * @class CreateTodoDialogComponent
+ * @implements {OnInit}
+ */
 @Component({
   selector: "app-create-todo",
   templateUrl: "./create-todo.component.html",
@@ -55,10 +62,21 @@ export class CreateTodoDialogComponent implements OnInit {
 
   ngOnInit() {}
 
+  /**
+   * Close the dialog with or without data
+   *
+   * @param {*} [data]
+   * @memberof CreateTodoDialogComponent
+   */
   public close(data?: any): void {
     this.dialogRef.close(data);
   }
 
+  /**
+   * Create the todo item on the ledger and close the dialog
+   *
+   * @memberof CreateTodoDialogComponent
+   */
   public create(): void {
     this.todoData.dueDate = this.dueDate.value.format();
     this.ledger

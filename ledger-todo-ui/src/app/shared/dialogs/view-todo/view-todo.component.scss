@@ -15,4 +15,18 @@
   .w-100 {
     width: 100%;
   }
+
+  .owner {
+    word-wrap: break-word;
+  }
+
+  .sharedWith {
+    .sharedWithItem {
+      .sharedStream {
+        word-wrap: break-word;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #333;
+      }
+    }
+  }
 }

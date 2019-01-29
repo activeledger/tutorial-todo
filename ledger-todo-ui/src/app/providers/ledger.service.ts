@@ -15,33 +15,73 @@ import {
 import { IUpdateTodo, ICreateTodo } from "../shared/interfaces/todos.interface";
 import { Router } from "@angular/router";
 
+/**
+ * Handle sending data to the ledger
+ *
+ * @export
+ * @class LedgerService
+ */
 @Injectable({
   providedIn: "root"
 })
 export class LedgerService {
   constructor(private router: Router) {}
 
+  /**
+   * Get the key stored in local storage
+   *
+   * @type {IKey}
+   * @memberof LedgerService
+   */
   get key(): IKey {
     return JSON.parse(localStorage.getItem("keyPair")) as IKey;
   }
 
+  /**
+   * Store the key in local storage
+   *
+   * @memberof LedgerService
+   */
   set key(key: IKey) {
     localStorage.setItem("keyPair", JSON.stringify(key));
   }
 
+  /**
+   * Get the stream ID stored in local storage
+   *
+   * @memberof LedgerService
+   */
   get streamid() {
     return localStorage.getItem("streamid");
   }
 
+  /**
+   * Store a stream ID in local storage
+   *
+   * @memberof LedgerService
+   */
   set streamid(streamid: string) {
     localStorage.setItem("streamid", streamid);
   }
 
+  /**
+   * Logout of the system
+   * Remove the stream ID from local storage
+   * Navigate to the login page
+   *
+   * @memberof LedgerService
+   */
   public logout(): void {
     localStorage.removeItem("streamid");
     this.router.navigateByUrl("/");
   }
 
+  /**
+   * Create a new key and identity to use for the todos
+   *
+   * @returns {Promise<string>}
+   * @memberof LedgerService
+   */
   public createIdentity(): Promise<string> {
     return new Promise((resolve, reject) => {
       const conn = new Connection("http", "localhost", 5260);
@@ -71,6 +111,13 @@ export class LedgerService {
     });
   }
 
+  /**
+   * Send the transaction that creates a new todo item
+   *
+   * @param {ICreateTodo} data
+   * @returns {Promise<void>}
+   * @memberof LedgerService
+   */
   public createTodo(data: ICreateTodo): Promise<void> {
     return new Promise((resolve, reject) => {
       const conn = new Connection("http", "localhost", 5260);
@@ -98,6 +145,13 @@ export class LedgerService {
     });
   }
 
+  /**
+   * Update the data of a todo item
+   *
+   * @param {IUpdateTodo} data
+   * @returns {Promise<void>}
+   * @memberof LedgerService
+   */
   public updateTodo(data: IUpdateTodo): Promise<void> {
     return new Promise((resolve, reject) => {
       const conn = new Connection("http", "localhost", 5260);
@@ -135,6 +189,14 @@ export class LedgerService {
     });
   }
 
+  /**
+   * Share a todo item with another stream ID
+   *
+   * @param {string} recipientStream
+   * @param {string} todoStream
+   * @returns {Promise<void>}
+   * @memberof LedgerService
+   */
   public shareTodo(recipientStream: string, todoStream: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const conn = new Connection("http", "localhost", 5260);

@@ -8,6 +8,13 @@ import { ViewTodoDialogComponent } from "../shared/dialogs/view-todo/view-todo.c
 import { DatabaseService } from "../providers/database.service";
 import { ITodo } from "../shared/interfaces/todos.interface";
 
+/**
+ * Todo list
+ *
+ * @export
+ * @class TodoComponent
+ * @implements {OnInit}
+ */
 @Component({
   selector: "app-todo",
   templateUrl: "./todo.component.html",
@@ -15,7 +22,7 @@ import { ITodo } from "../shared/interfaces/todos.interface";
 })
 export class TodoComponent implements OnInit {
   public plus = faPlus;
-  public refresh = faSync;
+  public refreshIco = faSync;
   public logoutIco = faSadTear;
 
   public createdTodos: ITodo[] = [];
@@ -37,6 +44,13 @@ export class TodoComponent implements OnInit {
     this.getTodos();
   }
 
+  /**
+   * Get a list of todos created by this stream id
+   * and a list of todos shared with this stream id
+   *
+   * @private
+   * @memberof TodoComponent
+   */
   private getTodos(): void {
     this.db
       .getCreatedTodos()
@@ -46,13 +60,32 @@ export class TodoComponent implements OnInit {
       .catch((err: unknown) => {
         console.error(err);
       });
+
+    this.db
+      .getSharedWithTodos()
+      .then((sharedTodos: ITodo[]) => {
+        this.sharedTodos = sharedTodos;
+      })
+      .catch((err: unknown) => {
+        console.error(err);
+      });
   }
 
+  /**
+   * Get the users stream id from the url
+   * Check that it is the same one that's stored in
+   * local storage
+   *
+   * @private
+   * @memberof TodoComponent
+   */
   private getStreamFromUrl(): void {
     this.route.params.subscribe((params) => {
       if (params["streamid"]) {
         this.streamid = params["streamid"];
 
+        // Check that streamid and key are stored and that the streamid
+        // in the url matches the one in the local storage
         if (
           !this.ledger.streamid ||
           this.ledger.streamid !== this.streamid ||
@@ -66,8 +99,12 @@ export class TodoComponent implements OnInit {
     });
   }
 
+  /**
+   * Open the create todo dialog box
+   *
+   * @memberof TodoComponent
+   */
   public create(): void {
-    // this.ledger.createTodo({ name: "test", body: "body", dueDate: new Date() });
     const dialogRef = this.dialog.open(CreateTodoDialogComponent, {
       width: "500px"
     });
@@ -77,14 +114,34 @@ export class TodoComponent implements OnInit {
     });
   }
 
+  /**
+   * Logout the user and drop all data
+   *
+   * @memberof TodoComponent
+   */
   public logout(): void {
     this.ledger.logout();
   }
 
+  /**
+   * Open the view todo dialog box
+   *
+   * @param {string} id
+   * @memberof TodoComponent
+   */
   public viewTodo(id: string) {
     this.dialog.open(ViewTodoDialogComponent, {
       data: { id: id },
       width: "500px"
     });
+  }
+
+  /**
+   * Check for new todos
+   *
+   * @memberof TodoComponent
+   */
+  public refresh(): void {
+    this.getTodos();
   }
 }

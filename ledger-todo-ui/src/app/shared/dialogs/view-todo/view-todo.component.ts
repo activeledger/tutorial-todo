@@ -25,6 +25,13 @@ export const DATE_FORMATS = {
   }
 };
 
+/**
+ * Dialog for viewing more information about a todo
+ *
+ * @export
+ * @class ViewTodoDialogComponent
+ * @implements {OnInit}
+ */
 @Component({
   selector: "app-view-todo",
   templateUrl: "./view-todo.component.html",
@@ -46,6 +53,8 @@ export class ViewTodoDialogComponent implements OnInit {
   public shareWith: string;
   public shared = false;
 
+  public isSharedWithMe = false;
+
   constructor(
     public dialogRef: MatDialogRef<ViewTodoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -56,20 +65,29 @@ export class ViewTodoDialogComponent implements OnInit {
   ngOnInit() {
     this.db.findTodo(this.data.id).then((todo) => {
       this.todoData = todo;
+      this.isSharedWithMe = this.ledger.streamid !== this.todoData.owner;
     });
   }
 
+  /**
+   * Close the dialog with or without data
+   *
+   * @param {*} [data]
+   * @memberof ViewTodoDialogComponent
+   */
   public close(data?: any): void {
     this.dialogRef.close(data);
   }
 
+  /**
+   * Update the todo and close on success
+   *
+   * @memberof ViewTodoDialogComponent
+   */
   public update(): void {
     this.ledger
       .updateTodo(this.todoData as IUpdateTodo)
-      .then((ledgerResp) => {
-        console.log("ledgerResp");
-        console.log(ledgerResp);
-        // if (ledgerResp.)
+      .then(() => {
         this.close({ updated: true });
       })
       .catch((err: unknown) => {
@@ -77,6 +95,11 @@ export class ViewTodoDialogComponent implements OnInit {
       });
   }
 
+  /**
+   * Share a todo with a stream ID
+   *
+   * @memberof ViewTodoDialogComponent
+   */
   public share(): void {
     this.ledger
       .shareTodo(this.shareWith, this.todoData.streamid)

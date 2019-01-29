@@ -5,6 +5,7 @@
       matInput
       placeholder="Name"
       [(ngModel)]="todoData.name"
+      readonly="isSharedWithMe"
     />
   </mat-form-field>
 
@@ -16,6 +17,7 @@
       matInput
       placeholder="Description"
       [(ngModel)]="todoData.body"
+      readonly="isSharedWithMe"
     ></textarea>
   </mat-form-field>
 
@@ -28,27 +30,57 @@
       [matDatepicker]="dueDatePicker"
       placeholder="Due date"
       [formControl]="dueDate"
+      readonly="isSharedWithMe"
     />
     <mat-datepicker-toggle
       matSuffix
       [for]="dueDatePicker"
+      [hidden]="isSharedWithMe"
     ></mat-datepicker-toggle>
     <mat-datepicker #dueDatePicker></mat-datepicker>
   </mat-form-field>
 
   <br />
-  <br />
 
-  <mat-form-field class="w-100">
-    <input matInput placeholder="Share with..." [(ngModel)]="shareWith" />
-  </mat-form-field>
+  <div class="owner" *ngIf="isSharedWithMe">Owner: {{ todoData.owner }}</div>
   <br />
-  <button mat-button (click)="share()">Share</button>
-  <div *ngIf="shared">Shared</div>
 
   <mat-divider></mat-divider>
   <div class="buttons">
-    <button mat-button color="warn" (click)="close()">Cancel</button>&nbsp;
-    &nbsp; &nbsp; <button mat-raised-button (click)="update()">Update</button>
+    <button mat-button (click)="close()" *ngIf="isSharedWithMe">Close</button>
+    <button mat-button color="warn" (click)="close()" *ngIf="!isSharedWithMe">
+      Cancel
+    </button>
+    &nbsp; &nbsp; &nbsp;
+    <button mat-raised-button (click)="update()" *ngIf="!isSharedWithMe">
+      Update
+    </button>
+  </div>
+
+  <br />
+  <br />
+  <ng-container *ngIf="!isSharedWithMe">
+    <br />
+    <mat-divider></mat-divider>
+    <br />
+
+    <mat-form-field class="w-100">
+      <input matInput placeholder="Share with..." [(ngModel)]="shareWith" />
+    </mat-form-field>
+    <br />
+    <button mat-button (click)="share()">Share</button> <br />
+  </ng-container>
+
+  <div *ngIf="shared">Shared</div>
+  <br />
+  <mat-divider></mat-divider>
+  <br />
+
+  <div class="sharedWith">
+    <div class="sharedWithItem" *ngFor="let stream of todoData.sharedWith">
+      <ng-container *ngIf="ledger.streamid !== stream">
+        <div class="sharedStream">{{ stream }}</div>
+      </ng-container>
+    </div>
   </div>
 </div>
