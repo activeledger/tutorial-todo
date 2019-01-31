@@ -8,13 +8,51 @@ import { Activity, Standard } from "@activeledger/activecontracts";
  * @extends {Standard}
  */
 export default class Todo extends Standard {
+  /**
+   * Holds the Activity stream as created or fetched
+   *
+   * @private
+   * @type {Activity}
+   * @memberof Todo
+   */
   private activity: Activity;
 
+  /**
+   * The input stream id provided in the transaction
+   *
+   * @private
+   * @type {string}
+   * @memberof Todo
+   */
   private inputStream: string;
+
+  /**
+   * The output stream provided in the transaction.
+   * If no output stream this will not be set.
+   *
+   * @private
+   * @type {string}
+   * @memberof Todo
+   */
   private outputStream: string;
 
-  private data;
-  private state;
+  /**
+   * The data provided in the transaction
+   *
+   * @private
+   * @type {unknown}
+   * @memberof Todo
+   */
+  private data: unknown;
+
+  /**
+   * The current data state of the stream
+   *
+   * @private
+   * @type {unknown}
+   * @memberof Todo
+   */
+  private state: unknown;
 
   /**
    * Quick Transaction Check - Verify Input Properties (Known & Relevant Transaction?)
@@ -182,7 +220,7 @@ export default class Todo extends Standard {
     resolve: (ok: boolean) => void,
     reject: (message: string) => void
   ): void {
-    if (this.data.stream) {
+    if (this.data.stream && this.data.stream.length === 64) {
       resolve(true);
     } else {
       reject("No recipient provided");

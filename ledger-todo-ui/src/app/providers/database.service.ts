@@ -29,28 +29,16 @@ export class DatabaseService {
    * @memberof DatabaseService
    */
   public getCreatedTodos(): Promise<ITodo[]> {
-    return new Promise((resolve, reject) => {
-      const query = {
-        mango: {
-          selector: {
-            owner: this.ledger.streamid
-          },
-          fields: ["name", "_id", "body", "dueDate", "sharedWith"]
-        }
-      };
+    const query = {
+      mango: {
+        selector: {
+          owner: this.ledger.streamid
+        },
+        fields: ["name", "_id", "body", "dueDate", "sharedWith"]
+      }
+    };
 
-      this.axiosInstance
-        .post("/stream/search", query)
-        .then((resp) => {
-          return this.processTodos(resp.data.streams);
-        })
-        .then((processedTodos: ITodo[]) => {
-          resolve(processedTodos);
-        })
-        .catch((err: unknown) => {
-          reject(err);
-        });
-    });
+    return this.sendQuery(query);
   }
 
   /**
@@ -60,18 +48,59 @@ export class DatabaseService {
    * @memberof DatabaseService
    */
   public getSharedWithTodos(): Promise<ITodo[]> {
+    const query = {
+      mango: {
+        selector: {
+          sharedWith: {
+            $in: [this.ledger.streamid]
+          }
+        },
+        fields: ["name", "_id", "body", "dueDate", "sharedWith", "owner"]
+      }
+    };
+
+    return this.sendQuery(query);
+  }
+
+  /**
+   * Get the data of a specific todo
+   *
+   * @param {string} id
+   * @returns {Promise<ITodo>}
+   * @memberof DatabaseService
+   */
+  public findTodo(id: string): Promise<ITodo> {
     return new Promise((resolve, reject) => {
       const query = {
         mango: {
           selector: {
-            sharedWith: {
-              $in: [this.ledger.streamid]
-            }
+            _id: id
           },
           fields: ["name", "_id", "body", "dueDate", "sharedWith", "owner"]
         }
       };
 
+      this.sendQuery(query)
+        .then((todo: ITodo[]) => {
+          // Returns Array of processed todos, we just want to return one
+          resolve(todo[0]);
+        })
+        .catch((err: unknown) => {
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Send the query to Activecores search endpoint
+   *
+   * @private
+   * @param {{}} query
+   * @returns {Promise<ITodo[]>}
+   * @memberof DatabaseService
+   */
+  private sendQuery(query: {}): Promise<ITodo[]> {
+    return new Promise((resolve, reject) => {
       this.axiosInstance
         .post("/stream/search", query)
         .then((resp) => {
@@ -90,12 +119,12 @@ export class DatabaseService {
    * Process the todo data into and array of ITodo's
    *
    * @private
-   * @param {any} streams
+   * @param {any[]} streams
    * @returns {Promise<ITodo[]>}
    * @memberof DatabaseService
    */
-  private processTodos(streams: any): Promise<ITodo[]> {
-    return new Promise((resolve, reject) => {
+  private processTodos(streams: any[]): Promise<ITodo[]> {
+    return new Promise((resolve) => {
       const processed = [];
 
       let i = streams.length;
@@ -118,43 +147,6 @@ export class DatabaseService {
       }
 
       resolve(processed);
-    });
-  }
-
-  /**
-   * Get the data of a specific todo
-   *
-   * @param {string} id
-   * @returns {Promise<ITodo>}
-   * @memberof DatabaseService
-   */
-  public findTodo(id: string): Promise<ITodo> {
-    return new Promise((resolve, reject) => {
-      const query = {
-        mango: {
-          selector: {
-            _id: id
-          },
-          fields: ["name", "_id", "body", "dueDate", "sharedWith", "owner"]
-        }
-      };
-
-      this.axiosInstance
-        .post("/stream/search", query)
-        .then((resp) => {
-          const todo: ITodo = {
-            streamid: resp.data.streams[0]._id,
-            name: resp.data.streams[0].name,
-            body: resp.data.streams[0].body,
-            dueDate: resp.data.streams[0].dueDate,
-            sharedWith: resp.data.streams[0].sharedWith,
-            owner: resp.data.streams[0].owner
-          };
-          resolve(todo);
-        })
-        .catch((err: unknown) => {
-          reject(err);
-        });
     });
   }
 }
