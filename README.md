@@ -1,6 +1,6 @@
 # Activeledger Todo Tutorial
 
-## Version 1.0.0
+## Version 1.0.1
 
 This repository contains the reference code for the tutorial found on our developer portal [here](https://developers.activeledger.io/articles/basic-app/introduction).
 
