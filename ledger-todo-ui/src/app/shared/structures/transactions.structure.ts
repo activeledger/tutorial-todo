@@ -2,14 +2,17 @@ import {
   ICreateTodoTx,
   ICreateTodoInput,
   IUpdateTodoTx,
-  IUpdateTodoOutput
+  IUpdateTodoOutput,
 } from "../interfaces/transactions.interface";
 import { TxEntry } from "../enums/entry.enum";
 import { ITxBase, IBlankInput } from "../interfaces/transactions.interface";
 import {
   IShareTodoTx,
-  IShareTodoOutput
+  IShareTodoOutput,
 } from "../interfaces/transactions.interface";
+
+const namespace = "todo";
+const contract = "todo";
 
 /**
  * Structure used to generate a create todo transaction
@@ -30,8 +33,8 @@ export class CreateTodoTx implements ITxBase {
  * @implements {ICreateTodoTx}
  */
 class CreateTodoBody implements ICreateTodoTx {
-  $namespace = "todo";
-  $contract = "todo";
+  $namespace = namespace;
+  $contract = contract;
   $entry: TxEntry.Create = TxEntry.Create;
   $i: ICreateTodoInput = {};
 }
@@ -55,8 +58,8 @@ export class UpdateTodoTx implements ITxBase {
  * @implements {IUpdateTodoTx}
  */
 class UpdateTodoBody implements IUpdateTodoTx {
-  $namespace = "todo";
-  $contract = "todo";
+  $namespace = namespace;
+  $contract = contract;
   $entry: TxEntry.Update = TxEntry.Update;
   $i: IBlankInput = {};
   $o: IUpdateTodoOutput = {};
@@ -81,8 +84,8 @@ export class ShareTodoTx implements ITxBase {
  * @implements {IShareTodoTx}
  */
 class ShareTodoBody implements IShareTodoTx {
-  $namespace = "todo";
-  $contract = "todo";
+  $namespace = namespace;
+  $contract = contract;
   $entry: TxEntry.Share = TxEntry.Share;
   $i: IBlankInput = {};
   $o: IShareTodoOutput = {};

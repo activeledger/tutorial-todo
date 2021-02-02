@@ -1,11 +1,10 @@
 import { Component, OnInit, Inject } from "@angular/core";
 import {
-  MAT_DIALOG_DATA,
-  MatDialogRef,
   DateAdapter,
+  MAT_DATE_FORMATS,
   MAT_DATE_LOCALE,
-  MAT_DATE_FORMATS
-} from "@angular/material";
+} from "@angular/material/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { LedgerService } from "../../../providers/ledger.service";
 import { ITodo, IUpdateTodo } from "../../interfaces/todos.interface";
 import { FormControl } from "@angular/forms";
@@ -15,14 +14,14 @@ import { MomentDateAdapter } from "@angular/material-moment-adapter";
 
 export const DATE_FORMATS = {
   parse: {
-    dateInput: "D MMM YYYY"
+    dateInput: "D MMM YYYY",
   },
   display: {
     dateInput: "D MMM YYYY",
     monthYearLabel: "MMM YYYY",
     dateAllyLabel: "D MM YYYY",
-    monthYearAllyLabel: "MMMM YYYY"
-  }
+    monthYearAllyLabel: "MMMM YYYY",
+  },
 };
 
 /**
@@ -40,10 +39,10 @@ export const DATE_FORMATS = {
     {
       provide: DateAdapter,
       useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE]
+      deps: [MAT_DATE_LOCALE],
     },
-    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS }
-  ]
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS },
+  ],
 })
 export class ViewTodoDialogComponent implements OnInit {
   public dueDate = new FormControl(moment());
@@ -63,10 +62,15 @@ export class ViewTodoDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.db.findTodo(this.data.id).then((todo) => {
-      this.todoData = todo;
-      this.isSharedWithMe = this.ledger.streamid !== this.todoData.owner;
-    });
+    this.db
+      .findTodo(this.data.id)
+      .then((todo) => {
+        this.todoData = todo;
+        this.isSharedWithMe = this.ledger.streamid !== this.todoData.owner;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   /**

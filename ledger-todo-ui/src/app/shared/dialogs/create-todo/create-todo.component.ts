@@ -1,28 +1,27 @@
 import { Component, OnInit, Inject } from "@angular/core";
-import {
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-  DateAdapter,
-  MAT_DATE_LOCALE,
-  MAT_DATE_FORMATS
-} from "@angular/material";
 
 import * as moment from "moment";
 import { FormControl } from "@angular/forms";
 import { MomentDateAdapter } from "@angular/material-moment-adapter";
 import { LedgerService } from "../../../providers/ledger.service";
 import { ICreateTodo } from "../../interfaces/todos.interface";
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+} from "@angular/material/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 export const DATE_FORMATS = {
   parse: {
-    dateInput: "D MMM YYYY"
+    dateInput: "D MMM YYYY",
   },
   display: {
     dateInput: "D MMM YYYY",
     monthYearLabel: "MMM YYYY",
     dateAllyLabel: "D MM YYYY",
-    monthYearAllyLabel: "MMMM YYYY"
-  }
+    monthYearAllyLabel: "MMMM YYYY",
+  },
 };
 
 /**
@@ -40,10 +39,10 @@ export const DATE_FORMATS = {
     {
       provide: DateAdapter,
       useClass: MomentDateAdapter,
-      deps: [MAT_DATE_LOCALE]
+      deps: [MAT_DATE_LOCALE],
     },
-    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS }
-  ]
+    { provide: MAT_DATE_FORMATS, useValue: DATE_FORMATS },
+  ],
 })
 export class CreateTodoDialogComponent implements OnInit {
   public dueDate = new FormControl(moment());
@@ -51,7 +50,7 @@ export class CreateTodoDialogComponent implements OnInit {
   public todoData: ICreateTodo = {
     name: undefined,
     body: undefined,
-    dueDate: undefined
+    dueDate: undefined,
   };
 
   constructor(

@@ -1,42 +1,20 @@
 <div class="wrapper">
   <mat-form-field class="w-100">
-    <input
-      class="w-100"
-      matInput
-      placeholder="Name"
-      [(ngModel)]="todoData.name"
-      readonly="isSharedWithMe"
-    />
+    <input class="w-100" matInput placeholder="Name" [(ngModel)]="todoData.name" />
   </mat-form-field>
 
   <br />
   <br />
   <mat-form-field class="w-100">
-    <textarea
-      class="w-100"
-      matInput
-      placeholder="Description"
-      [(ngModel)]="todoData.body"
-      readonly="isSharedWithMe"
-    ></textarea>
+    <textarea class="w-100" matInput placeholder="Description" [(ngModel)]="todoData.body"></textarea>
   </mat-form-field>
 
   <br />
   <br />
 
   <mat-form-field>
-    <input
-      matInput
-      [matDatepicker]="dueDatePicker"
-      placeholder="Due date"
-      [formControl]="dueDate"
-      readonly="isSharedWithMe"
-    />
-    <mat-datepicker-toggle
-      matSuffix
-      [for]="dueDatePicker"
-      [hidden]="isSharedWithMe"
-    ></mat-datepicker-toggle>
+    <input matInput [matDatepicker]="dueDatePicker" placeholder="Due date" [formControl]="dueDate" />
+    <mat-datepicker-toggle matSuffix [for]="dueDatePicker" [hidden]="isSharedWithMe"></mat-datepicker-toggle>
     <mat-datepicker #dueDatePicker></mat-datepicker>
   </mat-form-field>
 
@@ -59,7 +37,7 @@
 
   <br />
   <br />
-  <ng-container *ngIf="!isSharedWithMe">
+  <!-- <ng-container *ngIf="!isSharedWithMe">
     <br />
     <mat-divider></mat-divider>
     <br />
@@ -82,5 +60,5 @@
         <div class="sharedStream">{{ stream }}</div>
       </ng-container>
     </div>
-  </div>
+  </div> -->
 </div>

@@ -4,11 +4,7 @@
   <div class="todo-streams">
     <div class="todo-stream created-stream">
       <div class="streams-title">Created</div>
-      <div
-        class="todo-item"
-        *ngFor="let todo of createdTodos"
-        (click)="viewTodo(todo.streamid)"
-      >
+      <div class="todo-item" *ngFor="let todo of createdTodos" (click)="viewTodo(todo.streamid)">
         <div class="todo-header">
           <div class="todo-title">
             {{ todo.name | slice: 0:15 }}
@@ -23,7 +19,7 @@
       </div>
     </div>
 
-    <div class="todo-stream shared-stream">
+    <!-- <div class="todo-stream shared-stream">
       <div class="streams-title">Shared with you</div>
       <div
         class="todo-item"
@@ -42,34 +38,19 @@
 
         <div class="todo-body">{{ todo.body }}</div>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <div class="controls">
-    <button
-      mat-fab
-      class="control create"
-      aria-label="Create"
-      (click)="create()"
-    >
+    <button mat-fab class="control create" aria-label="Create" (click)="create()">
       <fa-icon [icon]="plus"></fa-icon>
     </button>
 
-    <button
-      mat-fab
-      class="control refresh"
-      aria-label="refresh"
-      (click)="refresh()"
-    >
+    <button mat-fab class="control refresh" aria-label="refresh" (click)="refresh()">
       <fa-icon [icon]="refreshIco"></fa-icon>
     </button>
 
-    <button
-      mat-fab
-      class="control logout"
-      aria-label="Logout"
-      (click)="logout()"
-    >
+    <button mat-fab class="control logout" aria-label="Logout" (click)="logout()">
       <fa-icon [icon]="logoutIco"></fa-icon>
     </button>
   </div>

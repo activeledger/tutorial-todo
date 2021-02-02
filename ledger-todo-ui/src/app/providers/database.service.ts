@@ -12,12 +12,12 @@ import { LedgerService } from "./ledger.service";
  * @class DatabaseService
  */
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class DatabaseService {
   private axiosInstance = axios.create({
-    baseURL: "http://localhost:5261/api",
-    timeout: 10000
+    baseURL: "http://localhost:4200/api",
+    timeout: 10000,
   });
 
   constructor(private ledger: LedgerService) {}
@@ -28,17 +28,31 @@ export class DatabaseService {
    * @returns {Promise<ITodo[]>}
    * @memberof DatabaseService
    */
-  public getCreatedTodos(): Promise<ITodo[]> {
-    const query = {
-      mango: {
-        selector: {
-          owner: this.ledger.streamid
-        },
-        fields: ["name", "_id", "body", "dueDate", "sharedWith"]
-      }
-    };
+  public async getCreatedTodos(): Promise<ITodo[]> {
+    const ids = JSON.parse(localStorage.getItem("streamIds"));
 
-    return this.sendQuery(query);
+    if (!ids) {
+      return Promise.resolve([]);
+    }
+
+    const streamData = [];
+
+    for (const id of ids) {
+      try {
+        const todo = await this.sendQuery(id);
+        streamData.push({
+          streamid: todo.streamid,
+          name: todo.name,
+          body: todo.body,
+          dueDate: todo.dueDate,
+          sharedWith: todo.sharedWith,
+        });
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    return streamData;
   }
 
   /**
@@ -47,20 +61,20 @@ export class DatabaseService {
    * @returns {Promise<ITodo[]>}
    * @memberof DatabaseService
    */
-  public getSharedWithTodos(): Promise<ITodo[]> {
+  /*  public getSharedWithTodos(): Promise<ITodo[]> {
     const query = {
       mango: {
         selector: {
           sharedWith: {
-            $in: [this.ledger.streamid]
-          }
+            $in: [this.ledger.streamid],
+          },
         },
-        fields: ["name", "_id", "body", "dueDate", "sharedWith", "owner"]
-      }
+        fields: ["name", "_id", "body", "dueDate", "sharedWith", "owner"],
+      },
     };
 
-    return this.sendQuery(query);
-  }
+    return this.sendQuery(this.ledger.streamid);
+  } */
 
   /**
    * Get the data of a specific todo
@@ -70,20 +84,22 @@ export class DatabaseService {
    * @memberof DatabaseService
    */
   public findTodo(id: string): Promise<ITodo> {
-    return new Promise((resolve, reject) => {
-      const query = {
-        mango: {
-          selector: {
-            _id: id
-          },
-          fields: ["name", "_id", "body", "dueDate", "sharedWith", "owner"]
-        }
-      };
+    if (!id) {
+      throw new Error("ID not defined");
+    }
 
-      this.sendQuery(query)
-        .then((todo: ITodo[]) => {
+    return new Promise((resolve, reject) => {
+      return this.sendQuery(id)
+        .then((todo: any) => {
           // Returns Array of processed todos, we just want to return one
-          resolve(todo[0]);
+          resolve({
+            streamid: todo.streamid,
+            name: todo.name,
+            body: todo.body,
+            dueDate: todo.dueDate,
+            sharedWith: todo.sharedWith,
+            owner: todo.owner,
+          });
         })
         .catch((err: unknown) => {
           reject(err);
@@ -99,15 +115,12 @@ export class DatabaseService {
    * @returns {Promise<ITodo[]>}
    * @memberof DatabaseService
    */
-  private sendQuery(query: {}): Promise<ITodo[]> {
+  private sendQuery(id: string): Promise<ITodo> {
     return new Promise((resolve, reject) => {
       this.axiosInstance
-        .post("/stream/search", query)
+        .get("/stream/" + id)
         .then((resp) => {
-          return this.processTodos(resp.data.streams);
-        })
-        .then((processedTodos: ITodo[]) => {
-          resolve(processedTodos);
+          resolve({ streamid: id, ...resp.data.stream });
         })
         .catch((err: unknown) => {
           reject(err);
@@ -134,9 +147,9 @@ export class DatabaseService {
         const dataHolder: ITodo = {
           streamid: stream._id,
           name: stream.name,
-          body: stream.body,
-          dueDate: new Date(stream.dueDate),
-          sharedWith: stream.sharedWith
+          body: stream.body ? stream.body : "",
+          dueDate: stream.dueDate ? new Date(stream.dueDate) : undefined,
+          sharedWith: stream.sharedWith ? stream.sharedWith : "",
         };
 
         if (stream.owner) {

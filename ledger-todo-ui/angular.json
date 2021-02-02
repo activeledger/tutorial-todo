@@ -54,9 +54,10 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/dev-server:generic",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "ledger-todo:build"
+            "browserTarget": "ledger-todo:build",
+            "proxyConfig": "./proxy.conf.json"
           },
           "configurations": {
             "production": {

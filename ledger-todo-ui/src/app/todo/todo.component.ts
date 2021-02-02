@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { faPlus, faSync, faSadTear } from "@fortawesome/free-solid-svg-icons";
 import { ActivatedRoute, Router } from "@angular/router";
 import { LedgerService } from "../providers/ledger.service";
-import { MatDialog } from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import { CreateTodoDialogComponent } from "../shared/dialogs/create-todo/create-todo.component";
 import { ViewTodoDialogComponent } from "../shared/dialogs/view-todo/view-todo.component";
 import { DatabaseService } from "../providers/database.service";
@@ -18,7 +18,7 @@ import { ITodo } from "../shared/interfaces/todos.interface";
 @Component({
   selector: "app-todo",
   templateUrl: "./todo.component.html",
-  styleUrls: ["./todo.component.scss"]
+  styleUrls: ["./todo.component.scss"],
 })
 export class TodoComponent implements OnInit {
   public plus = faPlus;
@@ -52,6 +52,8 @@ export class TodoComponent implements OnInit {
    * @memberof TodoComponent
    */
   private getTodos(): void {
+    const streamIds = JSON.parse(localStorage.getItem("streamIds"));
+
     this.db
       .getCreatedTodos()
       .then((todos: ITodo[]) => {
@@ -61,14 +63,14 @@ export class TodoComponent implements OnInit {
         console.error(err);
       });
 
-    this.db
+    /* this.db
       .getSharedWithTodos()
       .then((sharedTodos: ITodo[]) => {
         this.sharedTodos = sharedTodos;
       })
       .catch((err: unknown) => {
         console.error(err);
-      });
+      }); */
   }
 
   /**
@@ -106,10 +108,18 @@ export class TodoComponent implements OnInit {
    */
   public create(): void {
     const dialogRef = this.dialog.open(CreateTodoDialogComponent, {
-      width: "500px"
+      width: "500px",
     });
 
-    dialogRef.afterClosed().subscribe(() => {
+    dialogRef.afterClosed().subscribe((streamData) => {
+      let streamIds = JSON.parse(localStorage.getItem("streamIds"));
+      if (!streamIds) {
+        streamIds = [];
+      }
+
+      streamIds.push(streamData.$streams.new[0].id);
+
+      localStorage.setItem("streamIds", JSON.stringify(streamIds));
       this.getTodos();
     });
   }
@@ -129,11 +139,14 @@ export class TodoComponent implements OnInit {
    * @param {string} id
    * @memberof TodoComponent
    */
-  public viewTodo(id: string) {
-    this.dialog.open(ViewTodoDialogComponent, {
-      data: { id: id },
-      width: "500px"
+  public async viewTodo(id: string) {
+    const dialog = this.dialog.open(ViewTodoDialogComponent, {
+      data: { id },
+      width: "500px",
     });
+
+    await dialog.afterClosed().toPromise();
+    this.getTodos();
   }
 
   /**
