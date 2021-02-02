@@ -5,3 +5,9 @@
 
 ## v1.0.1
 - Updated vulnerable dependencies
+
+## v1.1.0
+- Updated dependencies
+- Implemented crypto shim to work with Angular 11
+- Removed calls to Activeledger API Query endpoint
+- Temporarily disabled sharedwith functionality
